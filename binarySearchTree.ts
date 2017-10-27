@@ -73,11 +73,11 @@ export default class BSTree<T> {
         if (isUndefined(element)) {
             return false;
         }
-        return this.searchNode(this.root, element) !== null;
+        return this.searchNode(this.root!, element) !== null;
     }
 
     remove(element: T): boolean {
-        const node = this.searchNode(this.root, element);
+        const node = this.searchNode(this.root!, element);
         if (node === null) {
             return false;
         }
@@ -88,39 +88,39 @@ export default class BSTree<T> {
 
     /// TODO fix type any for callback
     inorderTraversal(callback: any): void {
-        this.inorderTraversalAux(this.root, callback, {
+        this.inorderTraversalAux(this.root!, callback, {
             stop: false,
         });
     } 
 
     preorderTraversal(callback: any): void {
-        this.preorderTraversalAux(this.root, callback, {
+        this.preorderTraversalAux(this.root!, callback, {
             stop: false,
         });
     }
 
     postorderTraversal(callback: any): void {
-        this.postorderTraversalAux(this.root, callback, {
+        this.postorderTraversalAux(this.root!, callback, {
             stop: false,
         });
     }
 
     levelTraversal(callback: any): void {
-        this.levelTraversalAux(this.root, callback);
+        this.levelTraversalAux(this.root!, callback);
     }
 
     minimum(): T | undefined {
         if (this.isEmpty()) {
             return undefined;
         }
-        return this.minimumAux(this.root).element;
+        return this.minimumAux(this.root!).element;
     }
 
     maximum(): T | undefined {
         if (this.isEmpty()) {
             return undefined;
         }
-        return this.maximumAux(this.root).element;
+        return this.maximumAux(this.root!).element;
     }
 
     forEach(callback: any): void {
@@ -137,17 +137,17 @@ export default class BSTree<T> {
     }
 
     height(): number {
-        return this.heightAux(this.root);
+        return this.heightAux(this.root!);
     }
 
     private searchNode(node: BSTreeNode<T>, element: T): BSTreeNode<T> {
         let cmp: number | null = null;
         while (node !== null && cmp !== 0) {
-            cmp = this.compare(element, node.element);
+            cmp = this.compare(element, node.element!);
             if (cmp < 0) { // -1
-                node = node.leftCh;
+                node = node.leftCh!;
             } else if (cmp > 0) { // 1
-                node = node.rightCh;
+                node = node.rightCh!;
             }
         }
         return node;
@@ -156,10 +156,10 @@ export default class BSTree<T> {
     private transplant(n1: BSTreeNode<T>, n2: BSTreeNode<T>): void {
         if (n1.parent === null) {
             this.root = n2;
-        } else if (n1 === n1.parent.leftCh) {
-            n1.parent.leftCh = n2;
+        } else if (n1 === n1.parent!.leftCh) {
+            n1.parent!.leftCh = n2;
         } else {
-            n1.parent.rightCh = n2;
+            n1.parent!.rightCh = n2;
         }
         if (n2 !== null) {
             n2.parent = n1.parent;
@@ -168,19 +168,19 @@ export default class BSTree<T> {
 
     private removeNode(node: BSTreeNode<T>): void {
         if (node.leftCh === null) {
-            this.transplant(node, node.rightCh);
+            this.transplant(node, node.rightCh!);
         } else if (node.rightCh === null) {
-            this.transplant(node, node.leftCh);
+            this.transplant(node, node.leftCh!);
         } else {
-            const y = this.minimumAux(node.rightCh);
+            const y = this.minimumAux(node.rightCh!);
             if (y.parent !== node) {
-                this.transplant(y, y.rightCh);
+                this.transplant(y, y.rightCh!);
                 y.rightCh = node.rightCh;
-                y.rightCh.parent = y;
+                y.rightCh!.parent = y;
             }
             this.transplant(node, y);
             y.leftCh = node.leftCh;
-            y.leftCh.parent = y;
+            y.leftCh!.parent = y;
         }
     }
 
@@ -188,7 +188,7 @@ export default class BSTree<T> {
         if (node === null || signal.stop) {
             return;
         }
-        this.inorderTraversalAux(node.leftCh, callback, signal);
+        this.inorderTraversalAux(node.leftCh!, callback, signal);
         if (signal.stop) {
             return;
         } 
@@ -196,7 +196,7 @@ export default class BSTree<T> {
         if (signal.stop) {
             return;
         }
-        this.inorderTraversalAux(node.rightCh, callback, signal);
+        this.inorderTraversalAux(node.rightCh!, callback, signal);
     }
 
     private levelTraversalAux(node: BSTreeNode<T>, callback: any) {
@@ -205,15 +205,15 @@ export default class BSTree<T> {
             queue.push(node);
         }
         while (!queue.isEmpty()) {
-            node = queue.pop();
+            node = queue.pop()!;
             if (callback(node.element) === false) {
                 return;
             }
             if (node.leftCh !== null) {
-                queue.push(node.leftCh);
+                queue.push(node.leftCh!);
             }
             if (node.rightCh !== null) {
-                queue.push(node.rightCh);
+                queue.push(node.rightCh!);
             }
         }
     }
@@ -226,22 +226,22 @@ export default class BSTree<T> {
         if (signal.stop) {
             return;
         }
-        this.preorderTraversalAux(node.leftCh, callback, signal);
+        this.preorderTraversalAux(node.leftCh!, callback, signal);
         if (signal.stop) {
             return;
         }
-        this.preorderTraversalAux(node.rightCh, callback, signal);
+        this.preorderTraversalAux(node.rightCh!, callback, signal);
     }
 
     private postorderTraversalAux(node: BSTreeNode<T>, callback: any, signal: { stop: boolean }) {
         if (node === null || signal.stop) {
             return;
         }
-        this.postorderTraversalAux(node.leftCh, callback, signal);
+        this.postorderTraversalAux(node.leftCh!, callback, signal);
         if (signal.stop) {
             return;
         }
-        this.postorderTraversalAux(node.rightCh, callback, signal);
+        this.postorderTraversalAux(node.rightCh!, callback, signal);
         if (signal.stop) {
             return;
         }
@@ -250,14 +250,14 @@ export default class BSTree<T> {
 
     private minimumAux(node: BSTreeNode<T>): BSTreeNode<T> {
         while (node.leftCh !== null) {
-            node = node.leftCh;
+            node = node.leftCh!;
         }
         return node;
     }
 
     private maximumAux(node: BSTreeNode<T>): BSTreeNode<T> {
         while (node.rightCh !== null) {
-            node = node.rightCh;
+            node = node.rightCh!;
         }
         return node;
     }
@@ -266,28 +266,28 @@ export default class BSTree<T> {
         if (node === null) {
             return -1;
         }
-        return Math.max(this.heightAux(node.leftCh), this.heightAux(node.rightCh)) +1;
+        return Math.max(this.heightAux(node.leftCh!), this.heightAux(node.rightCh!)) +1;
     }
 
-    private insertNode(node: BSTreeNode<T>): BSTreeNode<T> {
+    private insertNode(node: BSTreeNode<T>): BSTreeNode<T> | null {
         let parent: any = null;
         let position = this.root;
         let cmp: number | null = null;
 
         while (position !== null) {
-            cmp = this.compare(node.element, position.element);
+            cmp = this.compare(node.element!, position.element!);
             if (cmp === 0) {
                 return null;
             } else if (cmp < 0) {
                 parent = position;
-                position = position.leftCh;
+                position = position.leftCh!;
             }
         }
         node.parent = parent;
         if (parent === null) {
             // The tree is empty.
             this.root = node;
-        } else if (this.compare(node.element, parent.element) < 0) {
+        } else if (this.compare(node.element!, parent.element) < 0) {
             parent.leftCh = node;
         } else {
             parent.rightCh = node;
