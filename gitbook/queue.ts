@@ -11,12 +11,16 @@ queue.shift()
 console.log(queue) // [1]
 
 /// In Typescript you can also do this with a class.
-class Queue<T> {
+export default class Queue<T> {
     _store:T[] = []
 
     push = (val:T) => this._store.push(val)
 
     pop = (): T | undefined => {
         return this._store.shift()
+    }
+
+    isEmpty = (): boolean => {
+        return this._store.length === 0
     }
 }

@@ -1,5 +1,7 @@
 /// Implementation of binary search tree (bst).
 
+import Queue from './gitbook/queue';
+
 /// Interface for the compare function.
 export interface ICompareFunction<T> {
     (a: T, b: T): number;
@@ -25,9 +27,9 @@ export function isUndefined(obj: any): boolean {
 /// Interface for a node in the tree.
 interface BSTreeNode<T> {
     element?: T;
-    leftCh?: BSTreeNode<T>;
-    rightCh?: BSTreeNode<T>;
-    parent?: BSTreeNode<T>;
+    leftCh?: BSTreeNode<T> | null;
+    rightCh?: BSTreeNode<T> | null;
+    parent?: BSTreeNode<T> | null;
 }
 
 export default class BSTree<T> {
@@ -197,5 +199,108 @@ export default class BSTree<T> {
         this.inorderTraversalAux(node.rightCh, callback, signal);
     }
 
-    
+    private levelTraversalAux(node: BSTreeNode<T>, callback: any) {
+        const queue = new Queue<BSTreeNode<T>>();
+        if (node !== null) {
+            queue.push(node);
+        }
+        while (!queue.isEmpty()) {
+            node = queue.pop();
+            if (callback(node.element) === false) {
+                return;
+            }
+            if (node.leftCh !== null) {
+                queue.push(node.leftCh);
+            }
+            if (node.rightCh !== null) {
+                queue.push(node.rightCh);
+            }
+        }
+    }
+
+    private preorderTraversalAux(node: BSTreeNode<T>, callback: any, signal: { stop: boolean }) {
+        if (node === null || signal.stop) {
+            return;
+        }
+        signal.stop = callback(node.element) === false;
+        if (signal.stop) {
+            return;
+        }
+        this.preorderTraversalAux(node.leftCh, callback, signal);
+        if (signal.stop) {
+            return;
+        }
+        this.preorderTraversalAux(node.rightCh, callback, signal);
+    }
+
+    private postorderTraversalAux(node: BSTreeNode<T>, callback: any, signal: { stop: boolean }) {
+        if (node === null || signal.stop) {
+            return;
+        }
+        this.postorderTraversalAux(node.leftCh, callback, signal);
+        if (signal.stop) {
+            return;
+        }
+        this.postorderTraversalAux(node.rightCh, callback, signal);
+        if (signal.stop) {
+            return;
+        }
+        signal.stop = callback(node.element) === false;
+    }
+
+    private minimumAux(node: BSTreeNode<T>): BSTreeNode<T> {
+        while (node.leftCh !== null) {
+            node = node.leftCh;
+        }
+        return node;
+    }
+
+    private maximumAux(node: BSTreeNode<T>): BSTreeNode<T> {
+        while (node.rightCh !== null) {
+            node = node.rightCh;
+        }
+        return node;
+    }
+
+    private heightAux(node: BSTreeNode<T>): number {
+        if (node === null) {
+            return -1;
+        }
+        return Math.max(this.heightAux(node.leftCh), this.heightAux(node.rightCh)) +1;
+    }
+
+    private insertNode(node: BSTreeNode<T>): BSTreeNode<T> {
+        let parent: any = null;
+        let position = this.root;
+        let cmp: number | null = null;
+
+        while (position !== null) {
+            cmp = this.compare(node.element, position.element);
+            if (cmp === 0) {
+                return null;
+            } else if (cmp < 0) {
+                parent = position;
+                position = position.leftCh;
+            }
+        }
+        node.parent = parent;
+        if (parent === null) {
+            // The tree is empty.
+            this.root = node;
+        } else if (this.compare(node.element, parent.element) < 0) {
+            parent.leftCh = node;
+        } else {
+            parent.rightCh = node;
+        }
+        return node;
+    }
+
+    private createNode(element: T): BSTreeNode<T> {
+        return  {
+            element: element,
+            leftCh: null,
+            rightCh: null,
+            parent: null,
+        };
+    }
 }
