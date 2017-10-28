@@ -151,6 +151,15 @@ export default class MerkleTree {
         return sjcl.bitArray.equal(tgt, root);
     }
 
+    /// https://bitcointalk.org/index.php?topic=403231.msg9054025#msg9054025
+    getNodeCount(): number {
+        let nodeCount = 1;
+        for (let i = this.leaves.length; i > 1; i = (i + 1) >> 1) {
+            nodeCount += i;
+        }
+        return nodeCount;
+    }
+
     private getHash(arg: sjcl.BitArray): sjcl.BitArray {
         let res = this.hashAlgo.update(arg).finalize();
         this.hashAlgo.reset();
