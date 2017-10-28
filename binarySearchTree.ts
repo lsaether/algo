@@ -32,6 +32,11 @@ interface BSTreeNode<T> {
     parent?: BSTreeNode<T> | null;
 }
 
+
+/// The below implementation uses many postfix operators `!` after variables
+/// to cancel out the null or undefined in the variable types. At best, this
+/// is a hack that could be better solved by better typing but I short circuited
+/// to using the postfix operator :)
 export default class BSTree<T> {
 
     private root: BSTreeNode<T> | null;
