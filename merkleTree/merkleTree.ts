@@ -4,10 +4,13 @@
 /// Every leaf node is labelled with data and every non-leaf node
 /// carries a hash of the child nodes.
 
-///<reference path='node_modules/@types/node/index.d.ts'/>
-
 import * as sjcl from 'sjcl'
 import { isUndefined } from './util'
+
+interface Proof {
+    position: string,
+    data: sjcl.BitArray,
+}
 
 export default class MerkleTree {
 
@@ -61,12 +64,6 @@ export default class MerkleTree {
         return false;
     }
 
-    private getHash(arg: sjcl.BitArray): sjcl.BitArray {
-        let res = this.hashAlgo.update(arg).finalize();
-        this.hashAlgo.reset();
-        return res;
-    }
-
     getLeaves(): any[] {
         return this.leaves;
     }
@@ -97,5 +94,66 @@ export default class MerkleTree {
     getRootHex(): string {
         return sjcl.codec.hex.fromBits(this.getRoot())
     }
-}
 
+    getProof(data: sjcl.BitArray, index?: number): Proof[] {
+        const proof = [];
+        let idx: number;
+
+        if (typeof index === undefined) {
+            idx = -1;
+
+            for (let i = 0; i < this.leaves.length; i++) {
+                if(sjcl.bitArray.equal(data, this.leaves[i]) === true) {
+                    idx = i;
+                }
+            }
+        } else {
+            idx = index!;
+        }
+
+        if (idx <= -1) {
+            throw Error('Could not find the index of value.')
+        }
+
+        for (let i = 0; i < this.rows.length; i++) {
+            const row = this.rows[i];
+            const isRightNode = idx % 2 === 1;
+            const pairIndex = (isRightNode ? idx - 1 : idx + 1);
+
+            /// The proof is the partner node.
+            if (pairIndex < row.length) {
+                proof.push({
+                    position: isRightNode ? 'left' : 'right',
+                    data: row[pairIndex],
+                })
+            }
+
+            // set index to parent index
+            idx = (idx / 2)|0;
+        }
+
+        return proof;
+    }
+
+    verify(proof: Proof[], target: sjcl.BitArray, root: sjcl.BitArray): boolean {
+        let tgt = target;
+
+        for (let i = 0; i < proof.length; i++) {
+            const node: Proof = proof[i];
+            const isLeftNode = (node.position === 'left');
+            const buffers = []
+
+            buffers.push(tgt);
+            buffers[isLeftNode ? 'unshift' : 'push'](node.data);
+            tgt = this.getHash(sjcl.bitArray.concat(buffers[0], buffers[1]));
+        }
+
+        return sjcl.bitArray.equal(tgt, root);
+    }
+
+    private getHash(arg: sjcl.BitArray): sjcl.BitArray {
+        let res = this.hashAlgo.update(arg).finalize();
+        this.hashAlgo.reset();
+        return res;
+    }
+}

@@ -16,10 +16,15 @@ let hasher = new sjcl.hash.sha256();
 let hashes = leaves.map((x) => hashHelper(x, hasher));
 
 const tree = new MerkleTree(hashes, hasher)
+const root = tree.getRoot();
+const proof = tree.getProof(hashes[2])
+const verified = tree.verify(proof, hashes[2], root)
 
-console.log(tree.getRootHex())
-printLine(30)
-console.log(tree.getRowsHex())
+console.log(verified)
+
+// console.log(tree.getRootHex())
+// printLine(30)
+// console.log(tree.getRowsHex())
 // printLine(30)
 // console.log(tree.getLeaves())
 
