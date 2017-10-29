@@ -117,7 +117,7 @@ export default class MerkleTree {
 
         for (let i = 0; i < this.rows.length; i++) {
             const row = this.rows[i];
-            const isRightNode = idx % 2 === 1;
+            const isRightNode = idx % 2;
             const pairIndex = (isRightNode ? idx - 1 : idx + 1);
 
             /// The proof is the partner node.
@@ -128,28 +128,32 @@ export default class MerkleTree {
                 })
             }
 
-            // set index to parent index
+            /// New index is the parent index.
             idx = (idx / 2)|0;
         }
 
         return proof;
     }
 
-    verify(proof: Proof[], target: sjcl.BitArray, root: sjcl.BitArray): boolean {
-        let tgt = target;
+    /// TODO: find out why this doesn't work.
+    // verify(proof: Proof[], target: sjcl.BitArray, root: sjcl.BitArray): boolean {
+    //     let tgt = target;
 
-        for (let i = 0; i < proof.length; i++) {
-            const node: Proof = proof[i];
-            const isLeftNode = (node.position === 'left');
-            const buffers = []
+    //     for (let i = 0; i < proof.length; i++) {
+    //         const proofNode: Proof = proof[i];
+    //         const isLeftNode = (proofNode.position === 'left');
+    //         const buffers = []
 
-            buffers.push(tgt);
-            buffers[isLeftNode ? 'unshift' : 'push'](node.data);
-            tgt = this.getHash(sjcl.bitArray.concat(buffers[0], buffers[1]));
-        }
+    //         buffers.push(tgt);
+    //         buffers[isLeftNode ? 'unshift' : 'push'](proofNode.data);
+    //         console.log(`\n${i}\n`)
+    //         console.log(buffers)
+    //         console.log(`\n${i}\n`)
+    //         tgt = this.getHash(sjcl.bitArray.concat(buffers[0], buffers[1]));
+    //     }
 
-        return sjcl.bitArray.equal(tgt, root);
-    }
+    //     return sjcl.bitArray.equal(tgt, root);
+    // }
 
     /// https://bitcointalk.org/index.php?topic=403231.msg9054025#msg9054025
     getNodeCount(): number {
