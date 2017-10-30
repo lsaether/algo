@@ -18,6 +18,16 @@ Outside
 
 .
 
+### Table of Contents 
+
+- Fibonacci 
+  - Recursive
+  - Iterative
+  - Pascal
+
+- 
+
+
 ### Credits
 
 Everything in the gitbook directory is from following along in the gitbook [here](https://basarat.gitbooks.io/algorithms/content/docs/datastructures/stack.html).
