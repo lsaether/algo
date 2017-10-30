@@ -21,9 +21,9 @@ Outside
 ### Table of Contents 
 
 - Fibonacci 
-  - Recursive
-  - Iterative
-  - Pascal
+  - [Recursive](https://github.com/lsaether/algo/tree/master/fibonacci/fibonacciRecursive.ts)
+  - [Iterative](https://github.com/lsaether/algo/tree/master/fibonacci/fibonacciIterative.ts)
+  - [Pascal](https://github.com/lsaether/algo/tree/master/fibonacci/fibonacciPascal.ts)
 
 - 
 
