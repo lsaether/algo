@@ -25,9 +25,6 @@ Outside
   - [Iterative](https://github.com/lsaether/algo/tree/master/fibonacci/fibonacciIterative.ts)
   - [Pascal](https://github.com/lsaether/algo/tree/master/fibonacci/fibonacciPascal.ts)
 
-- 
-
-
 ### Credits
 
 Everything in the gitbook directory is from following along in the gitbook [here](https://basarat.gitbooks.io/algorithms/content/docs/datastructures/stack.html).
